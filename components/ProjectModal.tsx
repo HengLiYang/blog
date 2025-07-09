@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ExternalLink, Github, Calendar, Users, TrendingUp, Award } from "lucide-react";
+import { X, Calendar, Users, TrendingUp, Award } from "lucide-react";
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -24,23 +24,26 @@ interface ProjectModalProps {
 }
 
 export function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
+  console.log('ProjectModal 渲染状态:', { isOpen, project: project?.title || 'null' });
+  
   if (!project) return null;
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* 背景遮罩 */}
+          {/* 背景遮罩 - z-index: 9999 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            style={{ zIndex: 9999 }}
           />
           
-          {/* 模态框内容 */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* 模态框内容 - z-index: 9999 */}
+          <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -136,43 +139,41 @@ export function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
 
                   {/* 核心成就 */}
                   <div>
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5 text-cyan-400" />
-                      核心成就
-                    </h3>
+                    <h3 className="text-xl font-semibold text-white mb-4">核心成就</h3>
                     <div className="grid gap-3">
                       {project.achievements.map((achievement, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-slate-800/30 rounded-lg">
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div key={index} className="flex items-start gap-3 p-4 bg-slate-800/50 rounded-lg">
+                          <TrendingUp className="h-5 w-5 text-cyan-400 mt-0.5 flex-shrink-0" />
                           <span className="text-slate-300">{achievement}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* 挑战与解决方案 */}
-                  {project.challenges && project.solutions && (
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <h3 className="text-xl font-semibold text-white mb-4">技术挑战</h3>
-                        <div className="space-y-3">
-                          {project.challenges.map((challenge, index) => (
-                            <div key={index} className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                              <p className="text-slate-300 text-sm">{challenge}</p>
-                            </div>
-                          ))}
-                        </div>
+                  {/* 技术挑战 */}
+                  {project.challenges && (
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-4">技术挑战</h3>
+                      <div className="grid gap-3">
+                        {project.challenges.map((challenge, index) => (
+                          <div key={index} className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                            <p className="text-slate-300">{challenge}</p>
+                          </div>
+                        ))}
                       </div>
-                      
-                      <div>
-                        <h3 className="text-xl font-semibold text-white mb-4">解决方案</h3>
-                        <div className="space-y-3">
-                          {project.solutions.map((solution, index) => (
-                            <div key={index} className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                              <p className="text-slate-300 text-sm">{solution}</p>
-                            </div>
-                          ))}
-                        </div>
+                    </div>
+                  )}
+
+                  {/* 解决方案 */}
+                  {project.solutions && (
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-4">解决方案</h3>
+                      <div className="grid gap-3">
+                        {project.solutions.map((solution, index) => (
+                          <div key={index} className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                            <p className="text-slate-300">{solution}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -193,19 +194,7 @@ export function ProjectModal({ isOpen, onClose, project }: ProjectModalProps) {
                   )}
                 </div>
 
-                {/* 底部操作区 */}
-                <div className="p-8 bg-slate-900/50 border-t border-slate-700">
-                  <div className="flex gap-4">
-                    <button className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2">
-                      <ExternalLink className="h-4 w-4" />
-                      查看在线演示
-                    </button>
-                    <button className="px-6 py-3 border border-slate-600 text-slate-300 font-medium rounded-lg hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-300 flex items-center gap-2">
-                      <Github className="h-4 w-4" />
-                      源码
-                    </button>
-                  </div>
-                </div>
+
               </div>
             </motion.div>
           </div>

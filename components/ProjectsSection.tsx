@@ -26,12 +26,17 @@ export function ProjectsSection() {
 
   const closeLibrary = () => {
     setIsLibraryOpen(false);
+    // 同时关闭项目详情（如果打开）
+    setIsModalOpen(false);
+    setSelectedProject(null);
   };
 
   const handleLibraryProjectSelect = (project: any) => {
-    setIsLibraryOpen(false);
+    console.log('ProjectsSection: 接收到项目选择', project.title);
     setSelectedProject(project);
     setIsModalOpen(true);
+    console.log('ProjectsSection: 状态已更新', { selectedProject: project.title, isModalOpen: true });
+    // 项目库保持打开状态，不关闭
   };
   const projects = [
     {
@@ -281,13 +286,10 @@ export function ProjectsSection() {
                 <div className="flex gap-3 pt-4 border-t border-slate-700/50">
                   <button 
                     onClick={() => handleProjectClick(project)}
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     <Play className="h-4 w-4" />
                     查看详情
-                  </button>
-                  <button className="px-4 py-2 border border-slate-600 text-slate-300 text-sm font-medium rounded-lg hover:border-cyan-500/50 hover:text-cyan-400 transition-all duration-300">
-                    技术分析
                   </button>
                 </div>
               </div>
@@ -318,14 +320,14 @@ export function ProjectsSection() {
         </motion.div>
       </div>
 
-      {/* 项目详情模态框 */}
+      {/* 项目详情模态框 - z-index: 50 */}
       <ProjectModal
         isOpen={isModalOpen}
         onClose={closeModal}
         project={selectedProject}
       />
 
-      {/* 项目库模态框 */}
+      {/* 项目库模态框 - z-index: 50 */}
       <ProjectLibraryModal
         isOpen={isLibraryOpen}
         onClose={closeLibrary}

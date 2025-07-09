@@ -443,9 +443,10 @@ export function ProjectLibraryModal({ isOpen, onClose, onProjectSelect }: Projec
     : allProjects.filter(project => project.category === selectedCategory);
 
   const handleProjectClick = (project: any) => {
-    // 所有项目都可以查看详情
+    // 所有项目都可以查看详情，但不关闭项目库
+    console.log('ProjectLibraryModal: 项目被点击', project.title);
     onProjectSelect(project);
-    onClose();
+    // 移除 onClose() 调用，让项目库保持打开
   };
 
   return (
