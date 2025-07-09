@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Code, Database, Map, Smartphone, Drone, TrendingUp } from "lucide-react";
+import { Code, Database, Map, Smartphone, TrendingUp } from "lucide-react";
 
 export function AboutSection() {
   const competencies = [
@@ -105,16 +105,37 @@ export function AboutSection() {
         >
           <h3 className="text-2xl font-bold text-white mb-6">我的成长故事</h3>
           <div className="prose prose-lg text-slate-300 max-w-none">
-            <p className="mb-4">
-              从2015年开始我的前端开发之路，见证了前端技术的快速发展。从最初的jQuery时代，
-              到现在的React、Vue生态，我始终保持着对新技术的敏感度和学习热情。
+            <p className="mb-6">
+              <strong className="text-cyan-400">【物联网可视化专家 · 2022至今】</strong><br/>
+              目前在升哲科技负责物联网感知数据的地图可视化方向，开发了灵雀无人机巡航系统
+              和灵思地图平台。这些前沿项目让我在Mapbox地图技术、实时数据处理、
+              WebSocket通信、大数据可视化等技术领域积累了丰富的实战经验，
+              成为了可视化技术的专业工程师。
+            </p>
+            <p className="mb-6">
+              <strong className="text-purple-400">【教育科技深耕 · 2020-2022】</strong><br/>
+              在鲸航科技专注出国留学教育产品，深度参与需求分析和产品设计。
+              开发了鲸准外教批改系统和鲸小爱背单词小程序，在React生态、
+              音视频处理、AI集成等技术领域取得突破。这段经历让我理解了
+              复杂业务场景下的技术挑战和解决思路。
+            </p>
+            <p className="mb-6">
+              <strong className="text-green-400">【架构思维养成 · 2018-2020】</strong><br/>
+              在智慧图科技期间，开始接触现代前端框架Vue，逐步承担前端架构设计责任。
+              这个阶段让我从纯粹的功能实现者转变为解决方案设计者，在交互体验和产品设计方面
+              形成了自己的见解，学会了如何平衡技术选型与业务需求。
             </p>
             <p className="mb-4">
-              在北京升哲科技的工作经历让我深入接触物联网和可视化技术，开发了灵雀无人机巡航系统
-              和灵思地图平台，这些项目让我在地图技术、实时数据处理和复杂交互方面积累了丰富经验。
+              <strong className="text-blue-400">【金融科技起点 · 2015-2017】</strong><br/>
+              在展恒基金开始前端开发之路，从jQuery + Bootstrap的传统开发模式入手，
+              负责后台管理系统和数据监控页面构建。这段经历让我深入理解了用户交互行为分析、
+              数据处理优化，以及与后端的协作模式。同时独立完成微信公众号开发，
+              为后续的技术成长奠定了坚实基础。
             </p>
-            <p>
-              我相信技术的价值在于解决实际问题，每个项目都是一次技术能力的提升和业务理解的深化。
+            <p className="text-slate-400 italic">
+              <TrendingUp className="inline h-5 w-5 mr-2" />
+              9年技术路径：从传统Web开发到现代前端架构，从业务实现到技术创新，
+              每一段经历都是技术能力的跃升和视野的拓展。
             </p>
           </div>
         </motion.div>

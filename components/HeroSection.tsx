@@ -20,8 +20,22 @@ export function HeroSection() {
           className="mb-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 p-1"
         >
           <div className="rounded-full bg-slate-950 p-2">
-            <div className="h-32 w-32 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white text-6xl font-bold">
-              杨
+            <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-transparent bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5">
+              <img 
+                src="/images/avatar.jpg" 
+                alt="杨恒利个人头像" 
+                className="w-full h-full rounded-full object-cover bg-slate-950"
+                onError={(e) => {
+                  // 如果图片加载失败，显示备用文字
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  target.parentElement!.innerHTML = `
+                    <div class="w-full h-full rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center text-white text-6xl font-bold">
+                      杨
+                    </div>
+                  `;
+                }}
+              />
             </div>
           </div>
         </motion.div>

@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Github, Play, TrendingUp, Users, Award } from "lucide-react";
 import { ProjectModal } from "./ProjectModal";
+import { ProjectLibraryModal } from "./ProjectLibraryModal";
 
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
 
   const handleProjectClick = (project: any) => {
     setSelectedProject(project);
@@ -16,6 +18,20 @@ export function ProjectsSection() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedProject(null);
+  };
+
+  const handleLibraryOpen = () => {
+    setIsLibraryOpen(true);
+  };
+
+  const closeLibrary = () => {
+    setIsLibraryOpen(false);
+  };
+
+  const handleLibraryProjectSelect = (project: any) => {
+    setIsLibraryOpen(false);
+    setSelectedProject(project);
+    setIsModalOpen(true);
   };
   const projects = [
     {
@@ -290,7 +306,10 @@ export function ProjectsSection() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <button className="group px-8 py-4 bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border border-cyan-500/30 rounded-xl text-cyan-300 font-medium hover:from-cyan-500/20 hover:to-blue-600/20 transition-all duration-300">
+          <button 
+            onClick={handleLibraryOpen}
+            className="group px-8 py-4 bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border border-cyan-500/30 rounded-xl text-cyan-300 font-medium hover:from-cyan-500/20 hover:to-blue-600/20 transition-all duration-300"
+          >
             <span className="flex items-center gap-2">
               查看完整项目库
               <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -304,6 +323,13 @@ export function ProjectsSection() {
         isOpen={isModalOpen}
         onClose={closeModal}
         project={selectedProject}
+      />
+
+      {/* 项目库模态框 */}
+      <ProjectLibraryModal
+        isOpen={isLibraryOpen}
+        onClose={closeLibrary}
+        onProjectSelect={handleLibraryProjectSelect}
       />
     </section>
   );

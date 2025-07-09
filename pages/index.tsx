@@ -3,7 +3,7 @@ import React from "react";
 import { HeroSection } from "../components/HeroSection";
 import { AboutSection } from "../components/AboutSection";
 import { ProjectsSection } from "../components/ProjectsSection";
-import { ArticlesSection } from "../components/ArticlesSection";
+import { SkillsSection } from "../components/SkillsSection";
 
 export default function HomePage() {
   return (
@@ -17,8 +17,8 @@ export default function HomePage() {
       {/* Projects Section - 精选项目展示 */}
       <ProjectsSection />
       
-      {/* Articles Section - 精选文章展示 */}
-      <ArticlesSection />
+      {/* Skills Section - 专业技能展示 */}
+      <SkillsSection />
       
       {/* Footer */}
       <footer className="relative py-12 bg-slate-900/50 border-t border-slate-800">
