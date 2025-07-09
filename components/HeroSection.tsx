@@ -14,13 +14,13 @@ export function HeroSection() {
   // 简历下载功能
   const handleResumeDownload = () => {
     const resumeUrl = "https://file-sun.oss-cn-beijing.aliyuncs.com/yang/Web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91-%E6%9D%A8%E6%81%92%E5%88%A9%E7%AE%80%E5%8E%86.pdf";
-    
+
     // 创建一个临时的a标签来触发下载
     const link = document.createElement('a');
     link.href = resumeUrl;
     link.download = 'Web前端开发-杨恒利简历.pdf'; // 设置下载文件名
     link.target = '_blank'; // 在新标签页打开，避免跨域问题
-    
+
     // 将链接添加到DOM，点击后移除
     document.body.appendChild(link);
     link.click();
@@ -73,9 +73,9 @@ export function HeroSection() {
           >
             <div className="rounded-full bg-slate-950 p-2">
               <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-transparent bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5">
-                <img 
-                  src="/images/avatar.jpg" 
-                  alt="杨恒利个人头像" 
+                <img
+                  src="/blog/images/avatar.jpg"
+                  alt="杨恒利个人头像"
                   className="w-full h-full rounded-full object-cover bg-slate-950"
                   onError={(e) => {
                     // 如果图片加载失败，显示备用文字
@@ -134,7 +134,7 @@ export function HeroSection() {
             {[
               "React/Vue 开发",
               "数据可视化",
-              "地图应用开发", 
+              "地图应用开发",
               "微信小程序",
               "无人机控制系统",
               "9年工作经验"
@@ -180,7 +180,7 @@ export function HeroSection() {
             }}
             className="mt-12 flex flex-col sm:flex-row gap-4"
           >
-            <button 
+            <button
               onClick={handleProjectsOpen}
               className="group relative px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white font-medium hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 flex items-center gap-2"
             >
@@ -191,8 +191,8 @@ export function HeroSection() {
                 transition={{ duration: 0.3 }}
               />
             </button>
-            
-            <button 
+
+            <button
               onClick={handleResumeDownload}
               className="group px-8 py-3 border border-cyan-500/30 rounded-lg text-cyan-300 font-medium hover:bg-cyan-500/10 transition-all duration-300 flex items-center gap-2"
             >
