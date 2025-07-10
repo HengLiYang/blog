@@ -5,6 +5,7 @@ import { LampContainer } from "./lamp";
 import { Download, Mail, Phone, Github, Linkedin } from "lucide-react";
 import { ProjectLibraryModal } from "./ProjectLibraryModal";
 import { ProjectModal } from "./ProjectModal";
+import { getAssetPath } from "@/lib/utils";
 
 export function HeroSection() {
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
@@ -13,7 +14,7 @@ export function HeroSection() {
 
   // 简历下载功能
   const handleResumeDownload = () => {
-    const resumeUrl = "https://file-sun.oss-cn-beijing.aliyuncs.com/yang/Web%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91-%E6%9D%A8%E6%81%92%E5%88%A9%E7%AE%80%E5%8E%86.pdf";
+    const resumeUrl = getAssetPath('/resume.pdf');
 
     // 创建一个临时的a标签来触发下载
     const link = document.createElement('a');
@@ -74,7 +75,7 @@ export function HeroSection() {
             <div className="rounded-full bg-slate-950 p-2">
               <div className="h-32 w-32 rounded-full overflow-hidden border-2 border-transparent bg-gradient-to-br from-cyan-400 to-blue-600 p-0.5">
                 <img
-                  src="/blog/images/avatar.jpg"
+                  src={getAssetPath('/images/avatar.jpg')}
                   alt="杨恒利个人头像"
                   className="w-full h-full rounded-full object-cover bg-slate-950"
                   onError={(e) => {
@@ -148,7 +149,7 @@ export function HeroSection() {
             ))}
           </motion.div>
 
-          {/* 联系信息 */}
+          {/* 联系方式和行动引导 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -169,7 +170,7 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* CTA 按钮 */}
+          {/* 行动引导按钮 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -180,18 +181,20 @@ export function HeroSection() {
             }}
             className="mt-12 flex flex-col sm:flex-row gap-4"
           >
+            {/* 查看项目库按钮 */}
             <button
               onClick={handleProjectsOpen}
-              className="group relative px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white font-medium hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 flex items-center gap-2"
+              className="group relative px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg text-white font-medium hover:from-cyan-600 hover:to-blue-700 transition-all duration-300"
             >
-              <span>查看我的项目</span>
-              <motion.div
-                className="w-0 h-0.5 bg-white/30"
-                whileHover={{ width: "100%" }}
-                transition={{ duration: 0.3 }}
-              />
+              <span className="flex items-center gap-2">
+                查看完整项目库
+                <svg className="h-4 w-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
             </button>
 
+            {/* 下载简历按钮 */}
             <button
               onClick={handleResumeDownload}
               className="group px-8 py-3 border border-cyan-500/30 rounded-lg text-cyan-300 font-medium hover:bg-cyan-500/10 transition-all duration-300 flex items-center gap-2"
