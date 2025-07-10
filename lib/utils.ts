@@ -9,7 +9,6 @@ export function cn(...inputs: ClassValue[]) {
 export function getAssetPath(path: string): string {
   // 确保路径以 / 开头
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  console.log(window.__NEXT_DATA__);
   // 在客户端环境下，从 window.__NEXT_DATA__ 获取 basePath
   if (typeof window !== 'undefined') {
     const basePath = window.__NEXT_DATA__?.buildId ?
