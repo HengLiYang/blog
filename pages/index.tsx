@@ -10,16 +10,18 @@ export default function HomePage() {
     <main className="min-h-screen bg-slate-950 text-white">
       {/* Hero Section - 第一屏价值主张 */}
       <HeroSection />
-      
+
       {/* About Section - 关于我和技术理念 */}
       <AboutSection />
-      
+
       {/* Projects Section - 精选项目展示 */}
       <ProjectsSection />
-      
+
       {/* Skills Section - 专业技能展示 */}
       <SkillsSection />
-      
+
+
+
       {/* Footer */}
       <footer className="relative py-12 bg-slate-900/50 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

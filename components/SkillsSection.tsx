@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Code2, 
-  Layers, 
-  Palette, 
-  Database, 
-  BarChart3, 
-  GitBranch, 
+import {
+  Code2,
+  Layers,
+  Palette,
+  Database,
+  BarChart3,
+  GitBranch,
   Zap,
   Smartphone,
   Server,
@@ -32,7 +32,7 @@ export function SkillsSection() {
     { name: "Ajax", level: 95, years: "9年", category: "数据交互", priority: "expert" },
     { name: "Git", level: 95, years: "9年", category: "开发工具", priority: "expert" },
     { name: "ES6+", level: 95, years: "7年", category: "现代技术", priority: "expert" },
-    
+
     // 熟练级 (80-89%)
     { name: "Vue", level: 90, years: "7年", category: "前端框架", priority: "advanced" },
     { name: "React Hooks", level: 90, years: "4年", category: "前端框架", priority: "advanced" },
@@ -44,7 +44,7 @@ export function SkillsSection() {
     { name: "RESTful API", level: 90, years: "8年", category: "数据交互", priority: "advanced" },
     { name: "Fetch API", level: 90, years: "6年", category: "数据交互", priority: "advanced" },
     { name: "npm/yarn/pnpm", level: 90, years: "8年", category: "开发工具", priority: "advanced" },
-    
+
     // 中级+ (75-89%)
     { name: "Flexbox", level: 88, years: "8年", category: "前端基础", priority: "intermediate" },
     { name: "Element UI", level: 88, years: "6年", category: "UI框架", priority: "intermediate" },
@@ -59,7 +59,7 @@ export function SkillsSection() {
     { name: "ESLint", level: 85, years: "6年", category: "开发工具", priority: "intermediate" },
     { name: "Prettier", level: 85, years: "5年", category: "开发工具", priority: "intermediate" },
     { name: "Tailwind CSS", level: 85, years: "3年", category: "UI框架", priority: "intermediate" },
-    
+
     // 中级 (70-84%)
     { name: "D3.js", level: 80, years: "3年", category: "数据可视化", priority: "intermediate" },
     { name: "Jotai", level: 80, years: "2年", category: "前端框架", priority: "intermediate" },
@@ -68,30 +68,34 @@ export function SkillsSection() {
     { name: "Storybook", level: 80, years: "2年", category: "开发工具", priority: "intermediate" },
     { name: "微前端", level: 80, years: "2年", category: "现代技术", priority: "intermediate" },
     { name: "Node.js", level: 80, years: "5年", category: "后端技术", priority: "intermediate" },
-    
-         // AI技术
-     { name: "COZE", level: 88, years: "2年", category: "AI技术", priority: "advanced" },
-     { name: "DIFY", level: 85, years: "1年", category: "AI技术", priority: "advanced" },
-     { name: "MCP", level: 80, years: "1年", category: "AI技术", priority: "intermediate" },
-     
-     // 基础+ (70-79%)
-     { name: "Gulp", level: 75, years: "5年", category: "构建工具", priority: "basic" },
-     { name: "Rollup", level: 75, years: "2年", category: "构建工具", priority: "basic" },
-     { name: "PWA", level: 75, years: "3年", category: "移动端开发", priority: "basic" },
-     { name: "ServiceWorker", level: 75, years: "3年", category: "现代技术", priority: "basic" },
-     { name: "Koa", level: 75, years: "3年", category: "后端技术", priority: "basic" },
-     { name: "Express", level: 70, years: "4年", category: "后端技术", priority: "basic" }
-   ];
+
+    // AI技术
+    { name: "COZE", level: 88, years: "2年", category: "AI技术", priority: "advanced" },
+    { name: "DIFY", level: 85, years: "1年", category: "AI技术", priority: "advanced" },
+    { name: "MCP", level: 80, years: "1年", category: "AI技术", priority: "intermediate" },
+
+    // 3D可视化技术
+    { name: "Three.js", level: 85, years: "3年", category: "数据可视化", priority: "advanced", demo: "/Satellite" },
+    { name: "React Three Fiber", level: 80, years: "2年", category: "数据可视化", priority: "intermediate", demo: "/Satellite" },
+
+    // 基础+ (70-79%)
+    { name: "Gulp", level: 75, years: "5年", category: "构建工具", priority: "basic" },
+    { name: "Rollup", level: 75, years: "2年", category: "构建工具", priority: "basic" },
+    { name: "PWA", level: 75, years: "3年", category: "移动端开发", priority: "basic" },
+    { name: "ServiceWorker", level: 75, years: "3年", category: "现代技术", priority: "basic" },
+    { name: "Koa", level: 75, years: "3年", category: "后端技术", priority: "basic" },
+    { name: "Express", level: 70, years: "4年", category: "后端技术", priority: "basic" }
+  ];
 
   const categories = ["全部", "前端基础", "前端框架", "UI框架", "数据可视化", "数据交互", "构建工具", "移动端开发", "开发工具", "现代技术", "AI技术", "后端技术"];
 
-  const filteredSkills = selectedCategory === "全部" 
-    ? allSkills 
+  const filteredSkills = selectedCategory === "全部"
+    ? allSkills
     : allSkills.filter(skill => skill.category === selectedCategory);
 
   const getSkillStyle = (skill: any) => {
     const baseClasses = "inline-block px-4 py-2 m-1 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer border";
-    
+
     // AI技术特殊样式
     if (skill.category === "AI技术") {
       if (skill.priority === "advanced") {
@@ -100,7 +104,7 @@ export function SkillsSection() {
         return `${baseClasses} bg-gradient-to-r from-orange-500/60 to-amber-600/60 text-white border-orange-400 hover:shadow-lg hover:shadow-orange-500/25`;
       }
     }
-    
+
     switch (skill.priority) {
       case "expert":
         return `${baseClasses} bg-gradient-to-r from-cyan-500 to-blue-600 text-white border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25 text-base font-bold`;
@@ -149,7 +153,7 @@ export function SkillsSection() {
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             基于9年前端开发经验，掌握全栈技术体系，专注于可视化和现代化前端解决方案
           </p>
-          
+
           {/* 技能统计 */}
           <div className="flex justify-center gap-8 mt-8">
             <div className="text-center">
@@ -209,11 +213,10 @@ export function SkillsSection() {
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-cyan-500 text-white shadow-lg"
-                  : "bg-slate-700/50 text-slate-400 hover:bg-slate-600/50 hover:text-cyan-400"
-              }`}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedCategory === category
+                ? "bg-cyan-500 text-white shadow-lg"
+                : "bg-slate-700/50 text-slate-400 hover:bg-slate-600/50 hover:text-cyan-400"
+                }`}
             >
               {category}
             </button>
@@ -239,11 +242,23 @@ export function SkillsSection() {
                 className={getSkillStyle(skill)}
                 title={`${skill.name} - 熟练度: ${skill.level}% | 经验: ${skill.years}`}
               >
-                <div className="flex items-center gap-2">
-                  {getPriorityIcon(skill.priority)}
-                  <span>{skill.name}</span>
-                  <span className="text-xs opacity-75">({skill.level}%)</span>
-                </div>
+                {skill.demo ? (
+                  <a
+                    href={skill.demo}
+                    className="flex items-center gap-2 hover:scale-105 transition-transform duration-200"
+                  >
+                    {getPriorityIcon(skill.priority)}
+                    <span>{skill.name}</span>
+                    <span className="text-xs opacity-75">({skill.level}%)</span>
+                    <span className="text-xs bg-white/20 px-1 rounded">Demo</span>
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    {getPriorityIcon(skill.priority)}
+                    <span>{skill.name}</span>
+                    <span className="text-xs opacity-75">({skill.level}%)</span>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

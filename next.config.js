@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   swcMinify: true,
-  output: 'export',
-  basePath: '/blog',
-  assetPrefix: '/blog/'
+  output: 'export'
 };
 
 module.exports = nextConfig;
