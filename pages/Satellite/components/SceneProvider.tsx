@@ -131,6 +131,23 @@ export const SceneProvider: React.FC<SceneProviderProps> = ({ children, containe
 
     const resourceManagerRef = useRef<ResourceManager | null>(null);
 
+    // 窗口大小变化监听器
+    const handleResize = useCallback(() => {
+        if (!containerRef.current || !rendererRef.current || !cameraRef.current)
+            return;
+
+        const width = containerRef.current.clientWidth;
+        const height = containerRef.current.clientHeight;
+        const panelWidth = 380;
+        const viewportWidth = Math.max(width - panelWidth, 1);
+
+        cameraRef.current.aspect = viewportWidth / height;
+        cameraRef.current.updateProjectionMatrix();
+
+        rendererRef.current.setSize(width, height);
+        rendererRef.current.setViewport(panelWidth, 0, viewportWidth, height);
+    }, [containerRef]);
+
     // 初始化Three.js环境
     useEffect(() => {
         try {
@@ -278,23 +295,6 @@ export const SceneProvider: React.FC<SceneProviderProps> = ({ children, containe
                 },
 
                 entityRegistry: entityRegistryRef.current,
-            };
-
-            // 窗口大小变化监听器
-            const handleResize = () => {
-                if (!containerRef.current || !rendererRef.current || !cameraRef.current)
-                    return;
-
-                const width = containerRef.current.clientWidth;
-                const height = containerRef.current.clientHeight;
-                const panelWidth = 380;
-                const viewportWidth = Math.max(width - panelWidth, 1);
-
-                cameraRef.current.aspect = viewportWidth / height;
-                cameraRef.current.updateProjectionMatrix();
-
-                rendererRef.current.setSize(width, height);
-                rendererRef.current.setViewport(panelWidth, 0, viewportWidth, height);
             };
 
             window.addEventListener('resize', handleResize);
