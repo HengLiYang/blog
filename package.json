@@ -7,7 +7,10 @@
     "build": "next build && rm -rf docs && mv out docs",
     "start": "next start",
     "lint": "next lint",
-    "koa-server": "node koa-server/index.js"
+    "koa-server": "node koa-server/index.js",
+    "optimize-textures": "node scripts/optimize-textures.js",
+    "simple-optimize": "node scripts/simple-optimize.js",
+    "build-optimized": "npm run simple-optimize && npm run build"
   },
   "dependencies": {
     "@koa/cors": "^5.0.0",

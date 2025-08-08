@@ -4,6 +4,7 @@ import { SceneContext } from './SceneProvider';
 import Earth from './Earth';
 import Satellite from './Satellite';
 import Stars from './Stars';
+import PerformanceMonitor from './PerformanceMonitor';
 
 interface SatelliteData {
     id: string;
@@ -102,6 +103,9 @@ const SatelliteScene: React.FC<SatelliteSceneProps> = ({
                     onSatelliteClick={() => { }}
                 />
             )}
+
+            {/* 性能监控组件 */}
+            <PerformanceMonitor />
         </>
     );
 };

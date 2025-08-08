@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useContext, useEffect, useRef, useMemo } from 'react';
+import { useContext, useEffect, useRef, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { SceneContext } from './SceneProvider';
 import {
@@ -12,7 +12,7 @@ import {
     INITIAL_ROTATION,
     SHADERS,
     TEXTURE_PATHS,
-} from './constants';
+} from '../../../lib/satellite-constants';
 
 interface EarthProps {
     worldRadius?: number;
@@ -28,6 +28,10 @@ const Earth: React.FC<EarthProps> = ({
     selectedSatellite = null
 }) => {
     const { scene, camera, renderer, resourceManager, isLoaded, setIsLoaded } = useContext(SceneContext);
+    const [loadingProgress, setLoadingProgress] = useState(0);
+    const [loadingError, setLoadingError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const earthRef = useRef<{
         group: THREE.Group | null;
         earth: THREE.Mesh | null;
@@ -90,7 +94,6 @@ const Earth: React.FC<EarthProps> = ({
     // 使用useMemo稳定rotationAxis对象
     const stableRotationAxis = useMemo(() => rotationAxis, [rotationAxis.x, rotationAxis.y, rotationAxis.z]);
 
-
     useEffect(() => {
         // 如果地球模型已存在，只控制显示/隐藏
         if (earthRef.current.group) {
@@ -107,13 +110,17 @@ const Earth: React.FC<EarthProps> = ({
     }, [selectedSatellite])
 
     useEffect(() => {
-
         if (!scene || !camera || !renderer || !resourceManager) {
             console.log('Earth: 场景、相机、渲染器或资源管理器不可用');
             return;
         }
-        // 设置加载状态为false，开始加载
+
+        // 重置状态
+        setLoadingError(null);
+        setLoadingProgress(0);
+        setIsLoading(true);
         setIsLoaded(false);
+
         console.log('Earth: 开始加载地球模型');
 
         const group = new THREE.Group();
@@ -136,6 +143,29 @@ const Earth: React.FC<EarthProps> = ({
             try {
                 console.log('Earth: 开始加载纹理文件');
 
+                // 创建加载进度跟踪
+                let loadedCount = 0;
+                const totalTextures = 5;
+
+                const updateProgress = () => {
+                    loadedCount++;
+                    const progress = (loadedCount / totalTextures) * 100;
+                    setLoadingProgress(progress);
+                    console.log(`Earth: 纹理加载进度 ${progress.toFixed(1)}%`);
+                };
+
+                // 设置纹理加载超时
+                const textureLoadTimeout = 30000; // 30秒超时
+
+                const loadTextureWithTimeout = (path: string, timeout: number) => {
+                    return Promise.race([
+                        resourceManager.loadTexture(path),
+                        new Promise<THREE.Texture>((_, reject) =>
+                            setTimeout(() => reject(new Error(`纹理加载超时: ${path}`)), timeout)
+                        )
+                    ]);
+                };
+
                 console.log('Earth: 开始加载纹理文件，路径:', {
                     ALBEDO: TEXTURE_PATHS.ALBEDO,
                     NIGHT_LIGHTS: TEXTURE_PATHS.NIGHT_LIGHTS,
@@ -143,50 +173,93 @@ const Earth: React.FC<EarthProps> = ({
                     CLOUDS: TEXTURE_PATHS.CLOUDS
                 });
 
-                const [dayMap, nightMap, bumpMap, specularMap, cloudsMap] = await Promise.all([
-                    resourceManager.loadTexture(TEXTURE_PATHS.ALBEDO),
-                    resourceManager.loadTexture(TEXTURE_PATHS.NIGHT_LIGHTS),
-                    resourceManager.loadTexture(TEXTURE_PATHS.BUMP),
-                    resourceManager.loadTexture('/textures/Ocean.png'), // 使用 Ocean.png 作为 specularMap
-                    resourceManager.loadTexture(TEXTURE_PATHS.CLOUDS),
-                ]);
+                // 并行加载纹理，但添加错误处理
+                const texturePromises = [
+                    loadTextureWithTimeout(TEXTURE_PATHS.ALBEDO, textureLoadTimeout)
+                        .then(texture => { updateProgress(); return texture; })
+                        .catch(error => {
+                            console.error('Earth: Albedo纹理加载失败，使用备用方案', error);
+                            return null;
+                        }),
+                    loadTextureWithTimeout(TEXTURE_PATHS.NIGHT_LIGHTS, textureLoadTimeout)
+                        .then(texture => { updateProgress(); return texture; })
+                        .catch(error => {
+                            console.error('Earth: Night lights纹理加载失败，使用备用方案', error);
+                            return null;
+                        }),
+                    loadTextureWithTimeout(TEXTURE_PATHS.BUMP, textureLoadTimeout)
+                        .then(texture => { updateProgress(); return texture; })
+                        .catch(error => {
+                            console.error('Earth: Bump纹理加载失败，使用备用方案', error);
+                            return null;
+                        }),
+                    loadTextureWithTimeout('/textures/Ocean.png', textureLoadTimeout)
+                        .then(texture => { updateProgress(); return texture; })
+                        .catch(error => {
+                            console.error('Earth: Ocean纹理加载失败，使用备用方案', error);
+                            return null;
+                        }),
+                    loadTextureWithTimeout(TEXTURE_PATHS.CLOUDS, textureLoadTimeout)
+                        .then(texture => { updateProgress(); return texture; })
+                        .catch(error => {
+                            console.error('Earth: Clouds纹理加载失败，使用备用方案', error);
+                            return null;
+                        }),
+                ];
+
+                const [dayMap, nightMap, bumpMap, specularMap, cloudsMap] = await Promise.all(texturePromises);
 
                 console.log('Earth: 纹理加载完成');
 
-                // 设置纹理属性
-                dayMap.wrapS = THREE.ClampToEdgeWrapping;
-                dayMap.wrapT = THREE.ClampToEdgeWrapping;
-                dayMap.colorSpace = THREE.SRGBColorSpace;
+                // 检查是否有纹理加载失败
+                const hasTextures = dayMap && nightMap && bumpMap && specularMap && cloudsMap;
 
-                bumpMap.wrapS = THREE.ClampToEdgeWrapping;
-                bumpMap.wrapT = THREE.ClampToEdgeWrapping;
-                bumpMap.colorSpace = THREE.NoColorSpace;
+                if (!hasTextures) {
+                    console.warn('Earth: 部分纹理加载失败，使用简化版本');
+                }
 
-                specularMap.wrapS = THREE.ClampToEdgeWrapping;
-                specularMap.wrapT = THREE.ClampToEdgeWrapping;
-                specularMap.colorSpace = THREE.NoColorSpace;
+                // 设置纹理属性（如果存在）
+                if (dayMap) {
+                    dayMap.wrapS = THREE.ClampToEdgeWrapping;
+                    dayMap.wrapT = THREE.ClampToEdgeWrapping;
+                    dayMap.colorSpace = THREE.SRGBColorSpace;
+                }
 
+                if (bumpMap) {
+                    bumpMap.wrapS = THREE.ClampToEdgeWrapping;
+                    bumpMap.wrapT = THREE.ClampToEdgeWrapping;
+                    bumpMap.colorSpace = THREE.NoColorSpace;
+                }
 
-                // 创建地球材质 - 使用 MeshPhongMaterial 支持 emissive 效果
+                if (specularMap) {
+                    specularMap.wrapS = THREE.ClampToEdgeWrapping;
+                    specularMap.wrapT = THREE.ClampToEdgeWrapping;
+                    specularMap.colorSpace = THREE.NoColorSpace;
+                }
+
+                // 创建地球材质 - 根据纹理可用性调整
                 const earthMaterial = new THREE.MeshPhongMaterial({
-                    map: dayMap,
-                    bumpMap: bumpMap,
-                    bumpScale: MATERIAL_PARAMS.BUMP_SCALE,
-                    specularMap: specularMap,
-                    specular: new THREE.Color(0x2266aa),  // 蓝色镜面反射
+                    map: dayMap || undefined,
+                    bumpMap: bumpMap || undefined,
+                    bumpScale: bumpMap ? MATERIAL_PARAMS.BUMP_SCALE : 0,
+                    specularMap: specularMap || undefined,
+                    specular: new THREE.Color(0x2266aa),
                     shininess: 25,
-                    emissive: new THREE.Color(0xFFAC00),  // 发光颜色
-                    emissiveMap: nightMap,  // 夜晚灯光纹理
-                    emissiveIntensity: 3.5,  // 发光强度
-                    color: new THREE.Color(0xf0f8ff),  // 淡蓝色基础色
+                    emissive: new THREE.Color(0xFFAC00),
+                    emissiveMap: nightMap || undefined,
+                    emissiveIntensity: nightMap ? 3.5 : 0,
+                    color: dayMap ? new THREE.Color(0xf0f8ff) : MATERIAL_PARAMS.FALLBACK_COLOR,
                 });
 
-                // 创建云层材质
-                const cloudsMaterial = new THREE.MeshPhongMaterial({
-                    map: cloudsMap,
-                    transparent: true,
-                    opacity: MATERIAL_PARAMS.CLOUDS_OPACITY,
-                });
+                // 创建云层材质（如果云层纹理可用）
+                let cloudsMaterial: THREE.MeshPhongMaterial | null = null;
+                if (cloudsMap) {
+                    cloudsMaterial = new THREE.MeshPhongMaterial({
+                        map: cloudsMap,
+                        transparent: true,
+                        opacity: MATERIAL_PARAMS.CLOUDS_OPACITY,
+                    });
+                }
 
                 // 创建大气层材质
                 const atmosphereMaterial = new THREE.ShaderMaterial({
@@ -204,15 +277,18 @@ const Earth: React.FC<EarthProps> = ({
                 // 创建地球网格
                 const earth = new THREE.Mesh(geometry, earthMaterial);
                 earth.name = 'earth-mesh';
-                earth.renderOrder = 1; // 设置渲染顺序
+                earth.renderOrder = 1;
                 group.add(earth);
                 earthRef.current.earth = earth;
-                // 创建云层网格
-                const cloudsGeometry = new THREE.SphereGeometry(worldRadius + EARTH_CONSTANTS.CLOUDS_OFFSET, EARTH_CONSTANTS.GEOMETRY_SEGMENTS, EARTH_CONSTANTS.GEOMETRY_SEGMENTS);
-                const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-                clouds.name = 'clouds-mesh';
-                group.add(clouds);
-                earthRef.current.clouds = clouds;
+
+                // 创建云层网格（如果材质可用）
+                if (cloudsMaterial) {
+                    const cloudsGeometry = new THREE.SphereGeometry(worldRadius + EARTH_CONSTANTS.CLOUDS_OFFSET, EARTH_CONSTANTS.GEOMETRY_SEGMENTS, EARTH_CONSTANTS.GEOMETRY_SEGMENTS);
+                    const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+                    clouds.name = 'clouds-mesh';
+                    group.add(clouds);
+                    earthRef.current.clouds = clouds;
+                }
 
                 // 创建大气层网格
                 const atmosphereGeometry = new THREE.SphereGeometry(worldRadius + EARTH_CONSTANTS.ATMOSPHERE_OFFSET, EARTH_CONSTANTS.GEOMETRY_SEGMENTS, EARTH_CONSTANTS.GEOMETRY_SEGMENTS);
@@ -266,11 +342,14 @@ const Earth: React.FC<EarthProps> = ({
                 group.add(pointLight);
                 earthRef.current.lights.additionalLights.push(pointLight);
 
-                // 地球模型加载完成，设置isLoaded为true
+                // 地球模型加载完成
+                setIsLoading(false);
                 setIsLoaded(true);
-                console.log('Earth: 地球模型加载完成，设置isLoaded为true');
+                setLoadingProgress(100);
+                console.log('Earth: 地球模型加载完成');
             } catch (error) {
                 console.error('Earth: 纹理加载失败，使用备用方案', error);
+                setLoadingError(error instanceof Error ? error.message : '未知错误');
 
                 // 备用方案：创建简单的地球
                 const earthMaterial = new THREE.MeshPhongMaterial({
@@ -294,9 +373,11 @@ const Earth: React.FC<EarthProps> = ({
                 group.add(directionalLight);
                 earthRef.current.lights.directional = directionalLight;
 
-                // 备用地球创建完成，设置isLoaded为true
+                // 备用地球创建完成
+                setIsLoading(false);
                 setIsLoaded(true);
-                console.log('Earth: 备用地球创建完成，设置isLoaded为true');
+                setLoadingProgress(100);
+                console.log('Earth: 备用地球创建完成');
             }
         };
 
@@ -305,57 +386,9 @@ const Earth: React.FC<EarthProps> = ({
 
         // 清理函数
         return () => {
-            // console.log('Earth: 开始清理资源');
-
-            // // 清理几何体
-            // if (earthRef.current.geometry) {
-            //     earthRef.current.geometry.dispose();
-            //     console.log('Earth: 几何体已释放');
-            // }
-
-            // // 从场景中移除地球组
-            // if (earthRef.current.group && scene) {
-            //     scene.remove(earthRef.current.group);
-            //     console.log('Earth: 地球组已从场景移除');
-            // }
-
-            // // 清理灯光
-            // if (earthRef.current.lights) {
-            //     earthRef.current.lights.additionalLights.forEach(light => {
-            //         if (light && light.parent) {
-            //             light.parent.remove(light);
-            //             light.dispose();
-            //         }
-            //     });
-            // }
-
-            // earthRef.current = {
-            //     group: null,
-            //     earth: null,
-            //     clouds: null,
-            //     atmosphere: null,
-            //     lights: {
-            //         ambient: null,
-            //         directional: null,
-            //         additionalLights: [],
-            //     },
-            //     geometry: null,
-            //     materials: {
-            //         earth: null,
-            //         clouds: null,
-            //         atmosphere: null,
-            //     },
-            //     textures: {
-            //         dayMap: null,
-            //         nightMap: null,
-            //         bumpMap: null,
-            //         specularMap: null,
-            //         cloudsMap: null,
-            //     },
-            //     worldRadius,
-            //     updateFunctionId: null,
-            // };
-            // console.log('Earth: 资源清理完成');
+            setIsLoading(false);
+            setLoadingProgress(0);
+            setLoadingError(null);
         };
     }, [scene, camera, renderer, resourceManager, worldRadius, atmosphereParams]);
 
@@ -384,7 +417,7 @@ const Earth: React.FC<EarthProps> = ({
             lastTime = time;
 
             // 限制更新频率，减少卡顿
-            if (delta < EARTH_CONSTANTS.FRAME_RATE_LIMIT) { // 约60fps
+            if (delta < EARTH_CONSTANTS.FRAME_RATE_LIMIT) {
                 return;
             }
 
